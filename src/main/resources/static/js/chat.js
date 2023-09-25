@@ -6,11 +6,19 @@ $(document).ready(function () {
     });
 });
 
+$(document).keyup(function(event) {
+    if (event.which === 13) {
+        sendMessage()
+        $('#msg-input').val('');
+    }
+});
+
 var sock = new SockJS("/echo");
 sock.onmessage = onMessage;
 sock.onclose = onClose;
 
 function sendMessage() {
+    if($("#msg-input").val().trim().length === 0) return;
     sock.send($("#msg-input").val());
 }
 function onMessage(msg) {
