@@ -87,7 +87,7 @@ public class EchoHandler extends TextWebSocketHandler {
 				single.sendMessage(newMessage);
 			}
 			else {
-				TextMessage newMessage = new TextMessage(String.format(leftMsg, single.getId(), formatedNow, message.getPayload().substring(3)));
+				TextMessage newMessage = new TextMessage(String.format(leftMsg, single.getId(), formatedNow, message.getPayload().substring(4)));
 				single.sendMessage(newMessage);
 			}
 		}
