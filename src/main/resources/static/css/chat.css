@@ -26,6 +26,13 @@
     background-image: var(--body-bg);
     font-family: Helvetica, sans-serif;
   }
+  .center {
+    text-align: center;
+  }
+  .room-area {
+    width: 100%;
+    margin: 250px 100px;
+  }
   
   .msger {
     display: flex;
@@ -117,7 +124,9 @@
   .right-msg .msg-img {
     margin: 0 0 0 10px;
   }
-  
+  .clickable {
+    cursor: pointer;
+  }
   .msger-inputarea {
     display: flex;
     padding: 10px;

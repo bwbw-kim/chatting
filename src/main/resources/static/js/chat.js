@@ -1,3 +1,5 @@
+let urlParams = new URLSearchParams(window.location.search);
+let id = urlParams.get('id');
 
 $(document).ready(function () {
     $("#msg-button").click(function () {
@@ -16,11 +18,14 @@ $(document).keyup(function(event) {
 var sock = new SockJS("/echo");
 sock.onmessage = onMessage;
 sock.onclose = onClose;
+sendRoomId(id)
 
-function sendMessage() {
-    if($("#msg-input").val().trim().length === 0) return;
-    sock.send($("#msg-input").val());
+function sendRoomId(id){
+    waitForSocketConnection(sock, function(){
+        sock.send("id:" + id);
+    });
 }
+
 function onMessage(msg) {
     var data = msg.data;
     $(".msger-chat").append(data + "<br/>");
@@ -30,5 +35,23 @@ function onClose(evt) {
     $(".msger-chat").append("<div>Connection Lost.</div>");
 }
 
+function sendMessage(msg){
+    if($("#msg-input").val().trim().length === 0) return;
+    sock.send("msg:" + $("#msg-input").val());
+}
 
+function waitForSocketConnection(socket, callback){
+    setTimeout(
+        function () {
+            if (socket.readyState === 1) {
+                if (callback != null){
+                    callback();
+                }
+            } else {
+                console.log("wait for connection...")
+                waitForSocketConnection(socket, callback);
+            }
+
+        }, 5);
+}
 
