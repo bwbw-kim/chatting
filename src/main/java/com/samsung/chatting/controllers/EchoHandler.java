@@ -36,6 +36,14 @@ public class EchoHandler extends TextWebSocketHandler {
 			handleMsg(session, message);
 		}
 	}
+	
+	private void updateParticipants(String roomId) throws IOException {
+		int participants = roomSessionMap.get(roomId).size();
+		for (WebSocketSession single : roomSessionMap.get(roomId)) {
+			TextMessage newMessage = new TextMessage("partipipantsarea:" + Integer.toString(participants));
+			single.sendMessage(newMessage);
+		}
+	}
 
 	private void handleRoomId(WebSocketSession session, TextMessage message) throws IOException {
 		String roomId = message.getPayload().substring(3);
@@ -43,9 +51,10 @@ public class EchoHandler extends TextWebSocketHandler {
 		if(!roomSessionMap.containsKey(roomId)) roomSessionMap.put(roomId, new ArrayList<WebSocketSession>());
 		roomSessionMap.get(roomId).add(session);
 		for (WebSocketSession single : roomSessionMap.get(roomId)) {
-			TextMessage newMessage = new TextMessage("<div class=\"center\">A new person has joined</div>");
+			TextMessage newMessage = new TextMessage("msgarea:" + "<div class=\"center\">A new person has joined</div>");
 			single.sendMessage(newMessage);
 		}
+		updateParticipants(roomId);
 	}
 
 	private void handleMsg (WebSocketSession session, TextMessage message) throws IOException {
@@ -83,11 +92,11 @@ public class EchoHandler extends TextWebSocketHandler {
 		String roomId = sessionRoomMap.get(session);
 		for(WebSocketSession single : roomSessionMap.get(roomId)) {
 			if(session.getId().equals(single.getId())){
-				TextMessage newMessage = new TextMessage(String.format(rightMsg, "Me", formatedNow, message.getPayload().substring(4)));
+				TextMessage newMessage = new TextMessage("msgarea:" + String.format(rightMsg, "Me", formatedNow, message.getPayload().substring(4)));
 				single.sendMessage(newMessage);
 			}
 			else {
-				TextMessage newMessage = new TextMessage(String.format(leftMsg, single.getId(), formatedNow, message.getPayload().substring(4)));
+				TextMessage newMessage = new TextMessage("msgarea:" + String.format(leftMsg, single.getId(), formatedNow, message.getPayload().substring(4)));
 				single.sendMessage(newMessage);
 			}
 		}
@@ -98,9 +107,6 @@ public class EchoHandler extends TextWebSocketHandler {
 		sessions.remove(session);
 		String roomId = sessionRoomMap.remove(session);
 		roomSessionMap.get(roomId).remove(session);
-		for (WebSocketSession single : roomSessionMap.get(roomId)) {
-			TextMessage newMessage = new TextMessage("<div class=\"center\">Someone left</div>");
-			single.sendMessage(newMessage);
-		}
+		updateParticipants(roomId);
 	}
 }

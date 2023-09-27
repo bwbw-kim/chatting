@@ -27,9 +27,14 @@ function sendRoomId(id){
 }
 
 function onMessage(msg) {
-    var data = msg.data;
-    $(".msger-chat").append(data + "<br/>");
-    $('.msger-chat').scrollTop($('.msger-chat').scrollTop() + 500);
+    let data = msg.data;
+    if (data.startsWith("msgarea:")) {
+        $(".msger-chat").append(data.substring(8) + "<br/>");
+        $('.msger-chat').scrollTop($('.msger-chat').scrollTop() + 500);
+    } else if (data.startsWith("partipipantsarea:")) {
+        $("#participants").html(data.substring(17))
+    }
+    
 }
 function onClose(evt) {
     $(".msger-chat").append("<div>Connection Lost.</div>");
